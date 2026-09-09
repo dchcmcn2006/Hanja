@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>한자 완전정복</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EAE3D2;
+    --paper-2:#DED4BC;
+    --ink:#26221B;
+    --ink-soft:#5B5340;
+    --seal:#A6392A;
+    --seal-dark:#7E2A1F;
+    --gold:#B8862F;
+    --jade:#3F6E5B;
+    --line: rgba(38,34,27,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(184,134,47,0.06), transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(63,110,91,0.06), transparent 45%);
+    color:var(--ink);
+    font-family:'Noto Sans KR', sans-serif;
+    min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    padding:18px 16px 40px;
+    min-height:100vh;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:16px;
+    padding-bottom:12px;
+    border-bottom:2px solid var(--ink);
+  }
+  .brand h1{
+    font-family:'Noto Serif KR',serif;
+    font-weight:900;
+    font-size:22px;
+    margin:0;
+    letter-spacing:-0.5px;
+  }
+  .brand h1 span{color:var(--seal);}
+  .brand .count{
+    font-size:13px;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+  .stamp{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:2.5px solid var(--seal);
+    color:var(--seal);
+    border-radius:6px;
+    font-weight:900;
+    font-size:12px;
+    padding:2px 8px;
+    transform:rotate(-2deg);
+  }
+
+  /* ---- HOME ---- */
+  .home-card{
+    background:var(--paper-2);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:20px 18px;
+    margin-bottom:14px;
+  }
+  .home-card h2{
+    font-family:'Noto Serif KR',serif;
+    font-size:17px;
+    margin:0 0 6px;
+  }
+  .home-card p{
+    margin:0 0 14px;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .progress-track{
+    height:10px;
+    background:rgba(38,34,27,0.10);
+    border-radius:6px;
+    overflow:hidden;
+    margin-bottom:6px;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--jade), #5C9481);
+    border-radius:6px;
+    transition:width .4s ease;
+  }
+  .progress-label{font-size:12px; color:var(--ink-soft); margin-bottom:14px;}
+  .btn{
+    display:block;
+    width:100%;
+    text-align:center;
+    padding:14px;
+    border-radius:8px;
+    border:none;
+    font-family:'Noto Sans KR',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    margin-bottom:10px;
+  }
+  .btn-primary{background:var(--ink); color:var(--paper);}
+  .btn-seal{background:var(--seal); color:#fff;}
+  .btn-ghost{background:transparent; color:var(--ink); border:1.5px solid var(--ink);}
+  .btn-jade{background:var(--jade); color:#fff;}
+  .btn:disabled{opacity:0.4;}
+  .stat-row{display:flex; gap:10px; margin-bottom:14px;}
+  .stat-box{
+    flex:1;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px;
+    text-align:center;
+  }
+  .stat-box b{display:block; font-size:20px; font-family:'Noto Serif KR',serif;}
+  .stat-box span{font-size:11px; color:var(--ink-soft);}
+  .link-row{display:flex; gap:8px; margin-top:8px;}
+  .link-row .btn{margin-bottom:0;}
+
+  /* ---- LIST screen ---- */
+  .grade-block{margin-bottom:16px;}
+  .grade-title{
+    font-family:'Noto Serif KR',serif;
+    font-weight:700; font-size:14px;
+    margin:0 0 8px;
+    color:var(--ink-soft);
+    border-left:4px solid var(--gold);
+    padding-left:8px;
+  }
+  .char-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:6px;
+  }
+  .char-chip{
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Noto Serif KR',serif;
+    font-size:18px;
+    font-weight:700;
+    border:1.5px solid var(--line);
+    border-radius:6px;
+    background:var(--paper-2);
+    position:relative;
+  }
+  .char-chip.mastered{background:rgba(63,110,91,0.18); border-color:var(--jade); color:var(--jade);}
+  .char-chip.weak{background:rgba(166,57,42,0.14); border-color:var(--seal); color:var(--seal-dark);}
+
+  /* ---- STUDY HEADER (dots + label) ---- */
+  .study-top{margin-bottom:16px;}
+  .dots{display:flex; gap:5px; margin-bottom:10px; flex-wrap:wrap;}
+  .dot{width:9px; height:9px; border-radius:50%; background:rgba(38,34,27,0.18);}
+  .dot.done{background:var(--jade);}
+  .dot.now{background:var(--seal);}
+  .step-label{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--seal);
+    text-transform:none;
+    margin-bottom:2px;
+  }
+  .step-sub{font-size:12px; color:var(--ink-soft);}
+
+  /* ---- FLASHCARD ---- */
+  .card-wrap{ margin:22px 0 18px; }
+  .flashcard{
+    background:var(--paper-2);
+    border:2px solid var(--ink);
+    border-radius:12px;
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    padding:20px;
+    text-align:center;
+  }
+  .fc-hanja{font-family:'Noto Serif KR',serif; font-weight:900; font-size:96px; line-height:1;}
+  .fc-grade{font-size:11px; color:var(--ink-soft); margin-top:10px;}
+  .fc-back{display:none;}
+  .flashcard.flipped .fc-front{display:none;}
+  .flashcard.flipped .fc-back{display:block;}
+  .fc-hun{font-size:26px; font-weight:700; font-family:'Noto Serif KR',serif;}
+  .fc-eum{font-size:34px; font-weight:900; color:var(--seal); margin-top:6px;}
+  .fc-hint{font-size:12px; color:var(--ink-soft); margin-top:14px;}
+  .nav-row{display:flex; gap:10px;}
+  .nav-row .btn{flex:1;}
+
+  /* ---- MATCH ---- */
+  .match-cols{display:flex; gap:10px; margin:14px 0;}
+  .match-col{flex:1; display:flex; flex-direction:column; gap:7px;}
+  .match-tile{
+    padding:12px 8px;
+    text-align:center;
+    border:1.5px solid var(--ink);
+    border-radius:7px;
+    background:var(--paper-2);
+    font-weight:700;
+    cursor:pointer;
+    font-size:14px;
+    min-height:20px;
+  }
+  .match-tile.hanja{font-family:'Noto Serif KR',serif; font-size:22px;}
+  .match-tile.sel{background:var(--gold); color:#fff; border-color:var(--gold);}
+  .match-tile.matched{background:rgba(63,110,91,0.2); border-color:var(--jade); color:var(--jade); cursor:default;}
+  .match-tile.wrongflash{background:rgba(166,57,42,0.25); border-color:var(--seal);}
+
+  /* ---- QUIZ ---- */
+  .quiz-q{
+    font-size:14px;
+    font-weight:500;
+    margin:16px 0 10px;
+    line-height:1.5;
+  }
+  .quiz-hanja-big{
+    font-family:'Noto Serif KR',serif;
+    font-weight:900;
+    font-size:72px;
+    text-align:center;
+    margin:12px 0 18px;
+  }
+  .opt-btn{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:13px 14px;
+    border:1.5px solid var(--ink);
+    border-radius:8px;
+    background:var(--paper-2);
+    font-size:15px;
+    font-weight:500;
+    margin-bottom:9px;
+    cursor:pointer;
+  }
+  .opt-btn.correct{background:rgba(63,110,91,0.25); border-color:var(--jade); font-weight:700;}
+  .opt-btn.wrong{background:rgba(166,57,42,0.2); border-color:var(--seal);}
+  .opt-btn:disabled{cursor:default;}
+  .feedback-line{
+    font-size:13px; font-weight:700; margin:10px 0;
+    min-height:18px;
+  }
+  .feedback-line.ok{color:var(--jade);}
+  .feedback-line.no{color:var(--seal);}
+
+  /* ---- RESULT ---- */
+  .result-score{
+    text-align:center;
+    font-family:'Noto Serif KR',serif;
+    font-size:48px;
+    font-weight:900;
+    margin:10px 0 4px;
+  }
+  .result-sub{text-align:center; color:var(--ink-soft); font-size:13px; margin-bottom:18px;}
+  .wrong-list{margin-bottom:16px;}
+  .wrong-item{
+    display:flex; align-items:center; gap:12px;
+    padding:9px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .wrong-item .wh{font-family:'Noto Serif KR',serif; font-size:24px; font-weight:900; width:34px;}
+  .wrong-item .wm{font-size:13px;}
+  .wrong-item .wm b{color:var(--seal);}
+
+  /* ---- CELEBRATE ---- */
+  .celebrate{text-align:center; padding:30px 10px;}
+  .seal-final{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:120px; height:120px;
+    border:4px solid var(--seal);
+    border-radius:14px;
+    color:var(--seal);
+    font-family:'Noto Serif KR',serif;
+    font-weight:900;
+    font-size:34px;
+    margin:14px 0 20px;
+    transform:rotate(-3deg);
+    animation:pop .5s ease;
+  }
+  @keyframes pop{ 0%{transform:scale(0.4) rotate(-3deg); opacity:0;} 100%{transform:scale(1) rotate(-3deg); opacity:1;} }
+
+  .confirm-box{
+    background:rgba(166,57,42,0.08);
+    border:1.5px solid var(--seal);
+    border-radius:8px;
+    padding:14px;
+    margin-bottom:12px;
+    font-size:13.5px;
+  }
+  .confirm-row{display:flex; gap:8px; margin-top:10px;}
+  .confirm-row .btn{margin-bottom:0;}
+  .backlink{
+    display:inline-block;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+    cursor:pointer;
+    text-decoration:underline;
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============ DATA ============ */
+const RAW = [
+["一","한","일","8급"],["二","두","이","8급"],["三","석","삼","8급"],["四","넉","사","8급"],["五","다섯","오","8급"],
+["六","여섯","륙","8급"],["七","일곱","칠","8급"],["八","여덟","팔","8급"],["九","아홉","구","8급"],["十","열","십","8급"],
+["日","날","일","8급"],["月","달","월","8급"],["火","불","화","8급"],["水","물","수","8급"],["木","나무","목","8급"],
+["上","윗","상","8급"],["中","가운데","중","8급"],["下","아래","하","8급"],["父","아버지","부","8급"],["母","어머니","모","8급"],
+["王","임금","왕","8급"],["子","아들","자","8급"],["女","계집","녀","8급"],["口","입","구","8급"],["土","흙","토","8급"],
+["山","메","산","8급"],["門","문","문","8급"],["小","작을","소","8급"],["人","사람","인","8급"],["白","흰","백","8급"],
+
+["江","강","강","7급"],["工","장인","공","7급"],["金","쇠","금","7급"],["男","사내","남","7급"],["力","힘","력","7급"],
+["立","설","립","7급"],["目","눈","목","7급"],["百","일백","백","7급"],["生","날","생","7급"],["石","돌","석","7급"],
+["手","손","수","7급"],["心","마음","심","7급"],["入","들","입","7급"],["自","스스로","자","7급"],["足","발","족","7급"],
+["川","내","천","7급"],["千","일천","천","7급"],["天","하늘","천","7급"],["出","날","출","7급"],["兄","맏","형","7급"],
+
+["東","동녘","동","6급"],["西","서녘","서","6급"],["南","남녘","남","6급"],["北","북녘","북","6급"],["方","모","방","6급"],
+["向","향할","향","6급"],["內","안","내","6급"],["外","바깥","외","6급"],["同","한가지","동","6급"],["名","이름","명","6급"],
+["靑","푸를","청","6급"],["年","해","년","6급"],["正","바를","정","6급"],["文","글월","문","6급"],["主","주인","주","6급"],
+["寸","마디","촌","6급"],["弟","아우","제","6급"],["夫","지아비","부","6급"],["少","적을","소","6급"],["夕","저녁","석","6급"],
+
+["歌","노래","가","준5급"],["家","집","가","준5급"],["間","사이","간","준5급"],["車","수레","거","준5급"],["巾","수건","건","준5급"],
+["古","예","고","준5급"],["空","빌","공","준5급"],["敎","가르칠","교","준5급"],["校","학교","교","준5급"],["國","나라","국","준5급"],
+["軍","군사","군","준5급"],["今","이제","금","준5급"],["記","기록할","기","준5급"],["氣","기운","기","준5급"],["己","몸","기","준5급"],
+["農","농사","농","준5급"],["答","대답","답","준5급"],["代","대신할","대","준5급"],["大","큰","대","준5급"],["道","길","도","준5급"],
+["洞","골","동","준5급"],["登","오를","등","준5급"],["來","올","래","준5급"],["老","늙을","로","준5급"],["里","마을","리","준5급"],
+["林","수풀","림","준5급"],["馬","말","마","준5급"],["萬","일만","만","준5급"],["末","끝","말","준5급"],["每","매양","매","준5급"],
+["面","낯","면","준5급"],["問","물을","문","준5급"],["物","물건","물","준5급"],["民","백성","민","준5급"],["本","근본","본","준5급"],
+["不","아니","불","준5급"],["分","나눌","분","준5급"],["士","선비","사","준5급"],["事","일","사","준5급"],["色","빛","색","준5급"],
+["先","먼저","선","준5급"],["姓","성씨","성","준5급"],["世","세상","세","준5급"],["所","바","소","준5급"],["時","때","시","준5급"],
+["市","저자","시","준5급"],["食","먹을","식","준5급"],["植","심을","식","준5급"],["室","집","실","준5급"],["安","편안할","안","준5급"],
+["羊","양","양","준5급"],["語","말씀","어","준5급"],["午","낮","오","준5급"],["玉","구슬","옥","준5급"],["牛","소","우","준5급"],
+["右","오른","우","준5급"],["位","자리","위","준5급"],["有","있을","유","준5급"],["育","기를","육","준5급"],["邑","고을","읍","준5급"],
+["衣","옷","의","준5급"],["耳","귀","이","준5급"],["字","글자","자","준5급"],["長","긴","장","준5급"],["場","마당","장","준5급"],
+["電","번개","전","준5급"],["前","앞","전","준5급"],["全","온전할","전","준5급"],["祖","할아비","조","준5급"],["左","왼","좌","준5급"],
+["住","살","주","준5급"],["地","땅","지","준5급"],["草","풀","초","준5급"],["平","평평할","평","준5급"],["學","배울","학","준5급"],
+["韓","나라이름","한","준5급"],["漢","한수","한","준5급"],["合","합할","합","준5급"],["海","바다","해","준5급"],["孝","효도","효","준5급"],
+["休","쉴","휴","준5급"]
+];
+const HANJA = RAW.map(r=>({h:r[0],hun:r[1],eum:r[2],grade:r[3]}));
+const N = HANJA.length;
+const byH = {}; HANJA.forEach(c=>byH[c.h]=c);
+const soundGroups = {};
+HANJA.forEach(c=>{ (soundGroups[c.eum] = soundGroups[c.eum]||[]).push(c.h); });
+
+/* ============ STATE / STORAGE ============ */
+const STORE_KEY = 'hanja_progress_v1';
+let mem = null; // in-memory fallback
+let state = null;
+
+function freshState(){
+  const order = HANJA.map((_,i)=>i);
+  shuffle(order);
+  const stats = {};
+  HANJA.forEach(c=> stats[c.h] = {mastered:false, weak:false});
+  return {
+    order,
+    stats,
+    initialPos:0,        // how many chars in `order` fully finished (learn+quiz) in phase 1
+    initialComplete:false,
+    screen:'home',
+    batch:null,           // {chars:[...], isReview:bool}
+    quiz:null,             // {qs:[...], idx:0, score:0, wrongList:[...]}
+    matchRound:null,       // transient match state
+    fcIdx:0,
+    confirmReset:false
+  };
+}
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+async function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){ state = JSON.parse(raw); return; }
+  }catch(e){ /* localStorage unavailable (e.g. private mode) */ }
+  state = mem || freshState();
+}
+async function saveState(){
+  mem = state;
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){ /* ignore */ }
+}
+
+/* ============ HELPERS ============ */
+function masteredCount(){ return HANJA.filter(c=>state.stats[c.h].mastered).length; }
+function weakList(){ return HANJA.filter(c=>state.stats[c.h].weak && !state.stats[c.h].mastered).map(c=>c.h); }
+function pickDistractors(field, correctVal, excludeH, count){
+  const pool = HANJA.filter(c=>c.h!==excludeH && c[field]!==correctVal);
+  shuffle(pool);
+  const out=[]; const seen=new Set([correctVal]);
+  for(const c of pool){ if(seen.has(c[field])) continue; seen.add(c[field]); out.push(c[field]); if(out.length>=count) break; }
+  return out;
+}
+
+function buildQuizForBatch(chars){
+  const qs = chars.map(h=>{
+    const c = byH[h];
+    const group = soundGroups[c.eum].filter(x=>x!==h);
+    const types = ['meaning','sound'];
+    if(group.length>0) types.push('sameSound');
+    const type = types[Math.floor(Math.random()*types.length)];
+    if(type==='meaning'){
+      const opts = shuffle([c.hun, ...pickDistractors('hun', c.hun, h, 3)]);
+      return {h, type, prompt:`'${c.h}'의 뜻(훈)으로 알맞은 것은?`, opts, answer:c.hun};
+    } else if(type==='sound'){
+      const opts = shuffle([c.eum, ...pickDistractors('eum', c.eum, h, 3)]);
+      return {h, type, prompt:`'${c.h}'의 음(소리)으로 알맞은 것은?`, opts, answer:c.eum};
+    } else {
+      const correctPartner = group[Math.floor(Math.random()*group.length)];
+      const others = HANJA.filter(x=>x.eum!==c.eum).map(x=>x.h);
+      shuffle(others);
+      const opts = shuffle([correctPartner, ...others.slice(0,3)]);
+      return {h, type, prompt:`'${c.h}(${c.eum})'과(와) 음이 같은 한자는?`, opts, answer:correctPartner};
+    }
+  });
+  return qs;
+}
+
+/* ============ RENDER ROOT ============ */
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = header() + screenHTML();
+  attachHandlers();
+  window.scrollTo(0,0);
+}
+function header(){
+  const mc = masteredCount();
+  return `<div class="brand">
+    <h1>한자<span>완전</span>정복</h1>
+    <div class="count">${mc} / ${N}</div>
+  </div>`;
+}
+
+function screenHTML(){
+  switch(state.screen){
+    case 'home': return homeScreen();
+    case 'list': return listScreen();
+    case 'flash': return flashScreen();
+    case 'match': return matchScreen();
+    case 'quiz': return quizScreen();
+    case 'result': return resultScreen();
+    case 'celebrate': return celebrateScreen();
+    default: return homeScreen();
+  }
+}
+
+/* ---------- HOME ---------- */
+function homeScreen(){
+  const mc = masteredCount();
+  const weak = weakList();
+  const pct = Math.round(mc/N*100);
+  let statusTitle, statusDesc, mainBtn;
+
+  if(!state.initialComplete){
+    const remaining = N - state.initialPos;
+    statusTitle = state.initialPos===0 ? '1차 학습을 시작해요' : '1차 학습 진행 중';
+    statusDesc = `전체 ${N}자 중 ${state.initialPos}자를 익혔어요. 남은 ${remaining}자, 10자씩 학습하고 바로 미니테스트를 봅니다.`;
+    mainBtn = `<button class="btn btn-primary" onclick="startNextBatch(false)">${state.initialPos===0?'학습 시작하기':'이어서 학습하기'}</button>`;
+  } else if(weak.length>0){
+    statusTitle = '복습 모드';
+    statusDesc = `1차 학습을 모두 마쳤어요! 약점 한자 ${weak.length}자가 남아있어요. 다 외울 때까지 반복해서 복습해요.`;
+    mainBtn = `<button class="btn btn-seal" onclick="startNextBatch(true)">약점 한자 복습하기</button>`;
+  } else {
+    statusTitle = '전체 완전정복!';
+    statusDesc = `${N}자를 모두 마스터했어요. 최고예요!`;
+    mainBtn = `<button class="btn btn-primary" onclick="state.screen='celebrate'; render();">완료 화면 보기</button>`;
+  }
+
+  const resetBlock = state.confirmReset ? `
+    <div class="confirm-box">
+      정말 모든 학습 기록을 초기화할까요? 되돌릴 수 없어요.
+      <div class="confirm-row">
+        <button class="btn btn-seal" style="margin:0;" onclick="doReset()">초기화</button>
+        <button class="btn btn-ghost" style="margin:0;" onclick="state.confirmReset=false; render();">취소</button>
+      </div>
+    </div>` : '';
+
+  return `
+  <div class="home-card">
+    <h2>${statusTitle}</h2>
+    <p>${statusDesc}</p>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-label">전체 진행률 ${pct}%</div>
+    ${mainBtn}
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box"><b>${mc}</b><span>완전히 외움</span></div>
+    <div class="stat-box"><b>${weak.length}</b><span>약점 한자</span></div>
+    <div class="stat-box"><b>${N-mc-weak.length}</b><span>학습 예정</span></div>
+  </div>
+
+  <div class="link-row">
+    <button class="btn btn-ghost" onclick="state.screen='list'; render();">전체 한자 보기</button>
+    <button class="btn btn-ghost" onclick="state.confirmReset=true; render();">초기화</button>
+  </div>
+  ${resetBlock}
+  `;
+}
+
+/* ---------- LIST ---------- */
+function listScreen(){
+  const grades = ['8급','7급','6급','준5급'];
+  let html = `<span class="backlink" onclick="state.screen='home'; render();">← 홈으로</span>`;
+  grades.forEach(g=>{
+    const chars = HANJA.filter(c=>c.grade===g);
+    html += `<div class="grade-block"><div class="grade-title">${g} (${chars.length}자)</div><div class="char-grid">`;
+    chars.forEach(c=>{
+      const st = state.stats[c.h];
+      const cls = st.mastered ? 'mastered' : (st.weak ? 'weak' : '');
+      html += `<div class="char-chip ${cls}" title="${c.hun} ${c.eum}">${c.h}</div>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `<p style="font-size:12px;color:var(--ink-soft);">초록색 = 외운 한자 · 빨간색 = 약점 한자</p>`;
+  return html;
+}
+
+/* ---------- BATCH START ---------- */
+function startNextBatch(isReview){
+  let chars;
+  if(isReview){
+    let wl = weakList();
+    shuffle(wl);
+    chars = wl.slice(0,10);
+  } else {
+    chars = state.order.slice(state.initialPos, state.initialPos+10).map(i=>HANJA[i].h);
+  }
+  state.batch = {chars, isReview};
+  state.fcIdx = 0;
+  state.screen = 'flash';
+  saveState().then(render);
+}
+
+/* ---------- FLASHCARD STEP ---------- */
+function flashScreen(){
+  const chars = state.batch.chars;
+  const h = chars[state.fcIdx];
+  const c = byH[h];
+  const dots = dotsHTML(chars.length, state.fcIdx, []);
+  return `
+  <div class="study-top">
+    <div class="dots">${dots}</div>
+    <div class="step-label">1단계 · 카드로 익히기</div>
+    <div class="step-sub">카드를 눌러 훈(뜻)과 음(소리)을 확인하세요 (${state.fcIdx+1}/${chars.length})</div>
+  </div>
+  <div class="card-wrap">
+    <div class="flashcard" id="fc" onclick="flipCard()">
+      <div class="fc-front">
+        <div class="fc-hanja">${c.h}</div>
+        <div class="fc-grade">${c.grade}</div>
+      </div>
+      <div class="fc-back">
+        <div class="fc-hun">${c.hun}</div>
+        <div class="fc-eum">${c.eum}</div>
+        <div class="fc-hint">탭하면 다시 한자가 보여요</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="fcPrev()" ${state.fcIdx===0?'disabled':''}>이전</button>
+    <button class="btn btn-primary" onclick="fcNext()">${state.fcIdx===chars.length-1?'다음 단계로':'다음 카드'}</button>
+  </div>
+  `;
+}
+function flipCard(){ document.getElementById('fc').classList.toggle('flipped'); }
+function fcPrev(){ if(state.fcIdx>0){ state.fcIdx--; render(); } }
+function fcNext(){
+  if(state.fcIdx < state.batch.chars.length-1){ state.fcIdx++; render(); }
+  else { startMatchRound('hun', '뜻'); }
+}
+
+/* ---------- MATCH STEP ---------- */
+function startMatchRound(field, label){
+  const chars = [...state.batch.chars];
+  const left = shuffle([...chars]);
+  const right = shuffle([...chars]);
+  state.matchRound = {field, label, left, right, matched:[], selL:null, selR:null};
+  state.screen = 'match';
+  render();
+}
+function matchScreen(){
+  const m = state.matchRound;
+  const doneAll = m.matched.length === m.left.length;
+  const leftTiles = m.left.map(h=>{
+    const cls = ['match-tile','hanja'];
+    if(m.matched.includes(h)) cls.push('matched');
+    else if(m.selL===h) cls.push('sel');
+    return `<div class="${cls.join(' ')}" onclick="matchPick('L','${h}')">${h}</div>`;
+  }).join('');
+  const rightTiles = m.right.map(h=>{
+    const val = m.field==='hun'?byH[h].hun:byH[h].eum;
+    const cls = ['match-tile'];
+    if(m.matched.includes(h)) cls.push('matched');
+    else if(m.selR===h) cls.push('sel');
+    return `<div class="${cls.join(' ')}" onclick="matchPick('R','${h}')">${val}</div>`;
+  }).join('');
+
+  return `
+  <div class="study-top">
+    <div class="step-label">2단계 · ${m.label} 짝맞추기</div>
+    <div class="step-sub">한자와 ${m.label}을(를) 순서대로 눌러 짝을 맞춰보세요 (${m.matched.length}/${m.left.length})</div>
+  </div>
+  <div class="match-cols">
+    <div class="match-col">${leftTiles}</div>
+    <div class="match-col">${rightTiles}</div>
+  </div>
+  ${doneAll ? `<button class="btn btn-primary" onclick="matchNext()">다음 단계로</button>` : ''}
+  `;
+}
+function matchPick(side, h){
+  const m = state.matchRound;
+  if(m.matched.includes(h)) return;
+  if(side==='L') m.selL = (m.selL===h)?null:h;
+  else m.selR = (m.selR===h)?null:h;
+  if(m.selL && m.selR){
+    if(m.selL===m.selR){
+      m.matched.push(m.selL);
+      m.selL=null; m.selR=null;
+      render();
+    } else {
+      const badL=m.selL, badR=m.selR;
+      render();
+      setTimeout(()=>{
+        const l = [...document.querySelectorAll('.match-col')[0].children];
+        const r = [...document.querySelectorAll('.match-col')[1].children];
+        m.selL=null; m.selR=null;
+        render();
+      }, 450);
+    }
+  } else {
+    render();
+  }
+}
+function matchNext(){
+  if(state.matchRound.field==='hun'){
+    startMatchRound('eum','음(소리)');
+  } else {
+    buildAndStartQuiz();
+  }
+}
+
+/* ---------- QUIZ STEP ---------- */
+function buildAndStartQuiz(){
+  const qs = buildQuizForBatch(state.batch.chars);
+  state.quiz = {qs, idx:0, score:0, wrongList:[], answered:false, chosen:null};
+  state.screen='quiz';
+  saveState().then(render);
+}
+function quizScreen(){
+  const q = state.quiz.qs[state.quiz.idx];
+  const dots = dotsHTML(state.quiz.qs.length, state.quiz.idx, state.quiz.wrongList.map(w=>state.quiz.qs.findIndex(x=>x.h===w.h)));
+  const optsHTML = q.opts.map(o=>{
+    let cls='opt-btn';
+    if(state.quiz.answered){
+      if(o===q.answer) cls+=' correct';
+      else if(o===state.quiz.chosen) cls+=' wrong';
+    }
+    return `<button class="${cls}" ${state.quiz.answered?'disabled':''} onclick="answerQuiz('${escapeQ(o)}')">${o}</button>`;
+  }).join('');
+  let fb='';
+  if(state.quiz.answered){
+    const ok = state.quiz.chosen===q.answer;
+    fb = `<div class="feedback-line ${ok?'ok':'no'}">${ok?'정답이에요! 👍':'다시 확인해요 — 정답은 \''+q.answer+'\''}</div>`;
+  }
+  const isLast = state.quiz.idx === state.quiz.qs.length-1;
+  return `
+  <div class="study-top">
+    <div class="dots">${dots}</div>
+    <div class="step-label">3단계 · 미니테스트</div>
+    <div class="step-sub">${state.quiz.idx+1} / ${state.quiz.qs.length}번 문제</div>
+  </div>
+  <div class="quiz-hanja-big">${q.h}</div>
+  <div class="quiz-q">${q.prompt}</div>
+  ${optsHTML}
+  ${fb}
+  ${state.quiz.answered ? `<button class="btn btn-primary" onclick="nextQuizQ()">${isLast?'결과 보기':'다음 문제'}</button>` : ''}
+  `;
+}
+function escapeQ(s){ return s.replace(/'/g,"\\'"); }
+function answerQuiz(chosen){
+  if(state.quiz.answered) return;
+  const q = state.quiz.qs[state.quiz.idx];
+  state.quiz.chosen = chosen;
+  state.quiz.answered = true;
+  const ok = chosen===q.answer;
+  if(ok) state.quiz.score++;
+  else state.quiz.wrongList.push({h:q.h, hun:byH[q.h].hun, eum:byH[q.h].eum});
+
+  // update stats
+  const st = state.stats[q.h];
+  if(state.batch.isReview){
+    if(ok){ st.mastered = true; st.weak = false; }
+    else { st.weak = true; }
+  } else {
+    if(ok){ st.mastered = true; st.weak = false; }
+    else { st.weak = true; st.mastered = false; }
+  }
+  render();
+}
+function nextQuizQ(){
+  if(state.quiz.idx < state.quiz.qs.length-1){
+    state.quiz.idx++;
+    state.quiz.answered=false;
+    state.quiz.chosen=null;
+    render();
+  } else {
+    if(!state.batch.isReview){
+      state.initialPos += state.batch.chars.length;
+      if(state.initialPos >= N) state.initialComplete = true;
+    }
+    state.screen='result';
+    saveState().then(render);
+  }
+}
+
+/* ---------- RESULT ---------- */
+function resultScreen(){
+  const q = state.quiz;
+  const wrongHTML = q.wrongList.length ? q.wrongList.map(w=>`
+    <div class="wrong-item">
+      <div class="wh">${w.h}</div>
+      <div class="wm"><b>${w.hun}</b> · ${w.eum}</div>
+    </div>`).join('') : `<p style="font-size:13px;color:var(--ink-soft);">틀린 문제가 없어요, 완벽해요!</p>`;
+
+  const weak = weakList();
+  let nextBtnHTML;
+  if(state.batch.isReview){
+    if(weak.length>0){
+      nextBtnHTML = `<button class="btn btn-seal" onclick="startNextBatch(true)">약점 한자 계속 복습하기</button>`;
+    } else {
+      nextBtnHTML = `<button class="btn btn-primary" onclick="state.screen='celebrate'; render();">🎉 완전정복 확인하기</button>`;
+    }
+  } else if(!state.initialComplete){
+    nextBtnHTML = `<button class="btn btn-primary" onclick="startNextBatch(false)">다음 10자 학습하기</button>`;
+  } else if(weak.length>0){
+    nextBtnHTML = `<button class="btn btn-seal" onclick="startNextBatch(true)">1차 학습 완료! 약점 복습 시작</button>`;
+  } else {
+    nextBtnHTML = `<button class="btn btn-primary" onclick="state.screen='celebrate'; render();">🎉 완전정복 확인하기</button>`;
+  }
+
+  return `
+  <div class="study-top">
+    <div class="step-label">${state.batch.isReview?'복습':'미니테스트'} 결과</div>
+  </div>
+  <div class="result-score">${q.score} / ${q.qs.length}</div>
+  <div class="result-sub">${scoreMsg(q.score,q.qs.length)}</div>
+  <div class="wrong-list">${wrongHTML}</div>
+  ${nextBtnHTML}
+  <button class="btn btn-ghost" onclick="state.screen='home'; render();">홈으로</button>
+  `;
+}
+function scoreMsg(s,t){
+  const r = s/t;
+  if(r===1) return '10문제를 모두 맞혔어요!';
+  if(r>=0.8) return '아주 잘했어요, 조금만 더 다지면 완벽해요.';
+  if(r>=0.5) return '반은 넘었어요. 약점 한자는 나중에 다시 복습할 거예요.';
+  return '아직 낯선 한자가 많아요. 복습 모드에서 다시 만나요.';
+}
+
+/* ---------- CELEBRATE ---------- */
+function celebrateScreen(){
+  return `
+  <div class="celebrate">
+    <div class="seal-final">完成</div>
+    <h2 style="font-family:'Noto Serif KR',serif; margin:0 0 10px;">한자 ${N}자 완전정복!</h2>
+    <p style="font-size:14px; color:var(--ink-soft); line-height:1.6;">8급부터 준5급까지, ${N}자를 모두 익히고 외웠어요.<br>정말 잘했어요!</p>
+    <button class="btn btn-ghost" style="margin-top:16px;" onclick="state.screen='list'; render();">전체 한자 목록 다시 보기</button>
+    <button class="btn btn-seal" onclick="state.screen='home'; render();">홈으로</button>
+  </div>`;
+}
+
+/* ---------- SHARED UI ---------- */
+function dotsHTML(total, cur, wrongIdxs){
+  let html='';
+  for(let i=0;i<total;i++){
+    let cls='dot';
+    if(i<cur) cls += wrongIdxs.includes(i) ? ' now' : ' done';
+    else if(i===cur) cls+=' now';
+    html += `<div class="${cls}"></div>`;
+  }
+  return html;
+}
+
+function doReset(){
+  state = freshState();
+  saveState().then(render);
+}
+
+function attachHandlers(){ /* using inline onclick, nothing extra needed */ }
+
+/* ============ BOOT ============ */
+loadState().then(render);
+</script>
+</body>
+</html>
